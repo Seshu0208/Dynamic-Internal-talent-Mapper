@@ -1,0 +1,15 @@
+PyMuPDF
+PyPDF2
+python-pptx
+pdfplumber
+python-docx
+pandas
+numpy
+requests
+chromadb
+sentence-transformers
+langgraph 
+langchain 
+langchain-core
+langchain-community
+openai
