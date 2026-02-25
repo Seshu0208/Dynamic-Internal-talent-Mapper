@@ -1,6 +1,12 @@
-from agents.agentic_orchestrator import run_agent
+# from agents.agentic_orchestrator import run_agent
+# from tools.file_ingestion import extract_text_from_file
+# from agents.agentic_orchestrator import store
+# from agents.skill_extraction_agent import extract_structured_skills
+# import os
+
+from agents.agentic_orchestrator_up1 import run_agent
 from tools.file_ingestion import extract_text_from_file
-from agents.agentic_orchestrator import store
+from agents.agentic_orchestrator_up1 import store
 from agents.skill_extraction_agent import extract_structured_skills
 import os
 
@@ -47,3 +53,5 @@ if __name__ == "__main__":
     print("FINAL RESULTS:", results)
 
     
+
+
