@@ -27,72 +27,6 @@ MAX_ITERATIONS = 8
 
 
 
-# def planner_node(state: AgentState):
-
-#     iteration = state.get("iteration", 0)
-#     scratchpad = state.get("scratchpad", [])
-
-#     if iteration >= MAX_ITERATIONS:
-#         return {**state, "next_action": "finish"}
-
-#     prompt = f"""
-# You are an autonomous Talent Matching Agent using ReAct reasoning.
-
-# Goal: {state['goal']}
-
-# Project:
-# {state['project_text']}
-
-# Previous Thoughts:
-# {chr(10).join(scratchpad)}
-
-# Last Observation:
-# {state.get('last_observation', 'None')}
-
-# Available Actions:
-# - retrieve
-# - score
-# - rank
-# - reflection
-# - finish
-
-# Follow format strictly:
-
-# Thought: <your reasoning>
-# Action: <one action from list>
-
-# Respond EXACTLY in that format.
-# """
-
-#     response = call_ollama(prompt)
-
-#     # Parse Thought and Action
-#     thought = ""
-#     action = "finish"
-
-#     for line in response.split("\n"):
-#         if line.lower().startswith("thought:"):
-#             thought = line.replace("Thought:", "").strip()
-#         if line.lower().startswith("action:"):
-#             action = line.replace("Action:", "").strip().lower()
-
-#     if action not in ["retrieve", "score", "rank", "reflection", "finish"]:
-#         action = "finish"
-
-#     scratchpad.append(f"Thought: {thought}")
-#     scratchpad.append(f"Action: {action}")
-
-#     return {
-#         **state,
-#         "scratchpad": scratchpad,
-#         "next_action": action,
-#         "iteration": iteration + 1
-#     }
-
-
-
-
-
 def planner_node(state: AgentState):
 
     iteration = state.get("iteration", 0)
@@ -161,7 +95,7 @@ Respond EXACTLY in that format.
 
 def retrieve_node(state: AgentState):
 
-    results = store.query(state["project_text"], top_k=3)
+    results = store.query(state["project_text"], top_k=5)
 
     candidates = list(zip(
         results["ids"][0],
@@ -207,25 +141,6 @@ def scoring_node(state: AgentState):
 
 
 
-# def ranking_node(state: AgentState):
-
-#     ranked = sorted(
-#         state["ranked_results"],
-#         key=lambda x: x["result"]["adjusted_score"],
-#         reverse=True
-#     )
-
-#     top_score = ranked[0]["result"]["adjusted_score"] if ranked else 0
-
-#     observation = f"Ranking complete. Top score: {round(top_score, 2)}"
-
-#     return {
-#         **state,
-#         "ranked_results": ranked,
-#         "last_observation": observation
-#     }
-
-
 
 def ranking_node(state: AgentState):
 
@@ -251,26 +166,6 @@ def ranking_node(state: AgentState):
         "last_observation": observation
     }
 
-
-
-
-
-# def reflection_node(state: AgentState):
-
-#     if not state.get("ranked_results"):
-#         return {
-#             **state,
-#             "last_observation": "No ranked results available."
-#         }
-
-#     top_score = state["ranked_results"][0]["result"]["adjusted_score"]
-
-#     observation = f"Reflection: Top score is {round(top_score,2)}"
-
-#     return {
-#         **state,
-#         "last_observation": observation
-#     }
 
 
 
@@ -356,12 +251,10 @@ def run_agent(project_text: str):
 
     final_state = agentic_graph.invoke(
         state,
-        config={"recursion_limit": 100}
+        config={"recursion_limit": 50}
     )
 
     return final_state.get("ranked_results", [])
-
-
 
 
 
